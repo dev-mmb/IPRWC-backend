@@ -16,11 +16,13 @@ public class ProductController {
     @Autowired
     ProductDao dao;
 
+    @CrossOrigin
     @GetMapping("/product")
     public HTTPResponse<List<Product>> getProduct() {
         return dao.getAllProducts();
     }
 
+    @CrossOrigin
     @PostMapping("/product")
     public HTTPResponse<Product[]> postProduct(@RequestBody ProductRequestObject[] products) {
         return dao.addProducts(products);

@@ -35,8 +35,8 @@ public class FileController {
     }
 
     @CrossOrigin(origins = "*")
-    @GetMapping("product_image")
-    public ResponseEntity<Resource> getProductImage(@RequestParam("name") String fileName, HttpServletRequest request) {
+    @GetMapping("product_image/{fileName}")
+    public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) {
         // Load file as Resource
         Resource resource = fileStorageService.loadFileAsResource(fileName);
         String contentType = null;

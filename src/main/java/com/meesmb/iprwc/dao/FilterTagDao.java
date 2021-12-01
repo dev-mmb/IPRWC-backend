@@ -3,10 +3,9 @@ package com.meesmb.iprwc.dao;
 import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.FilterGroup;
 import com.meesmb.iprwc.model.FilterTag;
-import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.repository.FilterGroupRepository;
 import com.meesmb.iprwc.repository.FilterTagRepository;
-import com.meesmb.iprwc.repository.FilterTagRequestObject;
+import com.meesmb.iprwc.request_objects.FilterTagRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

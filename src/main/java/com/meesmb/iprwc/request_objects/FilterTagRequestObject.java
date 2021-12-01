@@ -1,4 +1,4 @@
-package com.meesmb.iprwc.repository;
+package com.meesmb.iprwc.request_objects;
 
 import com.meesmb.iprwc.model.FilterGroup;
 
