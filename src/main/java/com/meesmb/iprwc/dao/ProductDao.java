@@ -27,12 +27,8 @@ public class ProductDao {
     }
 
     public HTTPResponse<List<Product>> getProductsByTags(String[] tags) {
-        ArrayList<Product> products = new ArrayList<>();
-        //for (String tag : tags) {
-            List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tags);
-            products.addAll(p);
-        //}
-        return HTTPResponse.returnSuccess(products);
+        List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tags);
+        return HTTPResponse.returnSuccess(p);
     }
 
     public HTTPResponse<Product[]> addProducts(ProductRequestObject[] requestObjects) {
@@ -58,6 +54,15 @@ public class ProductDao {
         productRepository.save(p);
 
         return HTTPResponse.<Product>returnSuccess(p);
+    }
+
+    public HTTPResponse<List<Product>> getProductsByName(String name, String[] tags) {
+        List<Product> products = new ArrayList<Product>();
+        if (tags.length == 0)
+            products = productRepository.findByNameStartsWithIgnoreCase(name);
+        else
+            products = productRepository.findDistinctByNameStartsWithIgnoreCaseAndFilterTags_nameIn(name, tags);
+        return HTTPResponse.<List<Product>>returnSuccess(products);
     }
 
 }
