@@ -50,6 +50,10 @@ public class FilterTagDao {
         return HTTPResponse.<FilterTag>returnSuccess(tag);
     }
 
+    public HTTPResponse<List<FilterTag>> getFilterTagsByGroup(String group) {
+        List<FilterTag> tags = repository.findByFilterGroup_name(group);
+        return HTTPResponse.<List<FilterTag>>returnSuccess(tags);
+    }
 
     public HTTPResponse<FilterGroup> addFilterGroup(String name) {
         FilterGroup group = new FilterGroup(name);

@@ -1,7 +1,6 @@
 package com.meesmb.iprwc.model;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 public class FilterTag {

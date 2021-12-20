@@ -18,8 +18,10 @@ public class ProductController {
 
     @CrossOrigin
     @GetMapping("/product")
-    public HTTPResponse<List<Product>> getProduct() {
-        return dao.getAllProducts();
+    public HTTPResponse<List<Product>> getProduct(@RequestParam(name="tags", defaultValue = "") String[] tags) {
+        if (tags.length == 0)
+            return dao.getAllProducts();
+        return dao.getProductsByTags(tags);
     }
 
     @CrossOrigin

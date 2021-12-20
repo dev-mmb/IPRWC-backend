@@ -9,6 +9,7 @@ import com.meesmb.iprwc.request_objects.ProductRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +24,15 @@ public class ProductDao {
 
     public HTTPResponse<List<Product>> getAllProducts() {
         return HTTPResponse.returnSuccess(productRepository.findAll());
+    }
 
+    public HTTPResponse<List<Product>> getProductsByTags(String[] tags) {
+        ArrayList<Product> products = new ArrayList<>();
+        //for (String tag : tags) {
+            List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tags);
+            products.addAll(p);
+        //}
+        return HTTPResponse.returnSuccess(products);
     }
 
     public HTTPResponse<Product[]> addProducts(ProductRequestObject[] requestObjects) {

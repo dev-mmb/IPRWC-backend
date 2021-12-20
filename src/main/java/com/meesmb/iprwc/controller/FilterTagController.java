@@ -19,10 +19,14 @@ public class FilterTagController {
 
     @CrossOrigin(origins = "*")
     @GetMapping("filter_tag")
-    public HTTPResponse<List<FilterTag>> getTags() {
-        List<FilterTag> tags = dao.getAllTags();
-        return HTTPResponse.<List<FilterTag>>returnSuccess(tags);
+    public HTTPResponse<List<FilterTag>> getTags(@RequestParam(name = "group", defaultValue = "") String group) {
+        if (group.equals("")) {
+            List<FilterTag> tags = dao.getAllTags();
+            return HTTPResponse.<List<FilterTag>>returnSuccess(tags);
+        }
+        return dao.getFilterTagsByGroup(group);
     }
+
 
     @CrossOrigin(origins = "*")
     @PostMapping("filter_tag")
