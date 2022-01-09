@@ -12,9 +12,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 // source: https://www.baeldung.com/role-and-privilege-for-spring-security-registration
 @Component
@@ -34,22 +32,28 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+
         if (hasAlreadyBeenSetup)
             return;
+        if (accountRepository.findByEmail("test@test.com") != null)
+            return;
+
         Privilege readPrivilege = createPrivilegeIfNotFound(PrivilegeName.READ);
         Privilege writePrivilege = createPrivilegeIfNotFound(PrivilegeName.WRITE);
 
         List<Privilege> adminPrivileges = Arrays.asList(readPrivilege, writePrivilege);
 
-        createRoleIfNotFound(RoleName.ADMIN, adminPrivileges);
-        createRoleIfNotFound(RoleName.USER, Arrays.asList(readPrivilege));
+        createRoleIfNotFound(RoleName.ADMIN, new HashSet<>(adminPrivileges));
+        HashSet<Privilege> read = new HashSet<>();
+        read.add(readPrivilege);
+        createRoleIfNotFound(RoleName.USER, read);
 
-        com.meesmb.iprwc.model.Role adminRole = roleRepository.findByName("ADMIN");
+        com.meesmb.iprwc.model.Role adminRole = roleRepository.findByName(RoleName.ADMIN.getValue());
         Account user = new Account();
         user.setEmail("test@test.com");
         // $2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm = test
         user.setPassword("$2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm");
-        user.setRoles(Arrays.asList(adminRole));
+        user.setRoles(new HashSet<>(Arrays.asList(adminRole)));
         accountRepository.save(user);
 
         hasAlreadyBeenSetup = true;
@@ -67,7 +71,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    com.meesmb.iprwc.model.Role createRoleIfNotFound(RoleName name, Collection<Privilege> privileges) {
+    com.meesmb.iprwc.model.Role createRoleIfNotFound(RoleName name, Set<Privilege> privileges) {
 
         com.meesmb.iprwc.model.Role role = roleRepository.findByName(name.getValue());
         if (role == null) {

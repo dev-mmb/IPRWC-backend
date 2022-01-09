@@ -3,6 +3,8 @@ package com.meesmb.iprwc.model;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Privilege {
@@ -11,9 +13,6 @@ public class Privilege {
     private Long id;
 
     private String name;
-
-    @ManyToMany(mappedBy = "privileges")
-    private Collection<Role> roles = new ArrayList<>();
 
     public Privilege() {
     }
@@ -36,11 +35,4 @@ public class Privilege {
         this.name = name;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
 }

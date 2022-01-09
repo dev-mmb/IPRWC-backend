@@ -1,5 +1,6 @@
 package com.meesmb.iprwc.service;
 
+import com.meesmb.iprwc.dao.AccountDao;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Privilege;
 import com.meesmb.iprwc.model.Role;
@@ -12,32 +13,32 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-@Component
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private AccountRepository accountRepository;
 
     @Autowired
-    private MessageSource messages;
-
-    @Autowired
     private RoleRepository roleRepository;
 
+    private PasswordEncoder bcryptEncoder;
+
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Account account = accountRepository.findByEmail(email);
 
         if (account == null) {
-            return new org.springframework.security.core.userdetails.User(" ", " ", true,
-                    true, true, true,
-                    getAuthorities(Arrays.asList(roleRepository.findByName("ROLE_USER"))));
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
 
         return new org.springframework.security.core.userdetails.User(account.getEmail(), account.getPassword(),
@@ -45,8 +46,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 getAuthorities(account.getRoles()));
     }
 
-    private Collection<? extends GrantedAuthority> getAuthorities(
-            Collection<Role> roles) {
+    private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
 
         return getGrantedAuthorities(getPrivileges(roles));
     }

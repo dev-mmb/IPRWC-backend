@@ -2,6 +2,8 @@ package com.meesmb.iprwc.model;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -10,23 +12,21 @@ public class Account {
     @Column(name = "id")
     String id;
 
-    @Column
+    @Column(unique = true)
     String email;
 
     @Column
     String password;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles;
+    @ManyToMany(targetEntity = Role.class)
+    private Set<Role> roles;
+
+    @OneToOne(targetEntity = ShoppingCart.class)
+    ShoppingCart shoppingCart;
 
     public Account() {
         id = UUID.randomUUID().toString();
+        roles = new HashSet<>();
     }
 
     public String getId() {
@@ -53,11 +53,19 @@ public class Account {
         this.password = password;
     }
 
-    public Collection<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Collection<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
+    }
+
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 }
