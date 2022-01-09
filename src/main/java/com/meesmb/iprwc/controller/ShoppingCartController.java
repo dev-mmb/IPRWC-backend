@@ -14,7 +14,6 @@ public class ShoppingCartController {
     @Autowired
     ShoppingCartDao dao;
 
-    @CrossOrigin(origins = "*")
     @GetMapping("/cart")
     public HTTPResponse<ShoppingCart> getShoppingCart(@RequestParam(name = "account_id", defaultValue = "") String accountId) {
         if (accountId.equals("")) return HTTPResponse.<ShoppingCart>returnFailure("no account_id");

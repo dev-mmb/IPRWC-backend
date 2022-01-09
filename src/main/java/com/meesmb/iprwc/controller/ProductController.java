@@ -16,7 +16,6 @@ public class ProductController {
     @Autowired
     ProductDao dao;
 
-    @CrossOrigin
     @GetMapping("/product")
     public HTTPResponse<List<Product>> getProduct(@RequestParam(name="tags", defaultValue = "") String[] tags,
                                                   @RequestParam(name="name", defaultValue = "") String name) {
@@ -30,7 +29,6 @@ public class ProductController {
         return dao.getAllProducts();
     }
 
-    @CrossOrigin
     @PostMapping("/product")
     public HTTPResponse<Product[]> postProduct(@RequestBody ProductRequestObject[] products) {
         return dao.addProducts(products);

@@ -17,7 +17,6 @@ public class FilterTagController {
     @Autowired
     FilterTagDao dao;
 
-    @CrossOrigin(origins = "*")
     @GetMapping("filter_tag")
     public HTTPResponse<List<FilterTag>> getTags(@RequestParam(name = "group", defaultValue = "") String group) {
         if (group.equals("")) {
@@ -28,20 +27,17 @@ public class FilterTagController {
     }
 
 
-    @CrossOrigin(origins = "*")
     @PostMapping("filter_tag")
     public HTTPResponse<FilterTag[]> postTag(@RequestBody FilterTagRequestObject[] obj) {
         return dao.addFilterTags(obj);
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("filter_group")
     public HTTPResponse<List<FilterGroup>> getGroups() {
         List<FilterGroup> groups = dao.getAllGroups();
         return HTTPResponse.<List<FilterGroup>>returnSuccess(groups);
     }
 
-    @CrossOrigin(origins = "*")
     @PostMapping("filter_group")
     public HTTPResponse<FilterGroup> postGroup(@RequestBody FilterGroupRequestObject obj) {
         return dao.addFilterGroup(obj.getName());

@@ -21,7 +21,6 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
-    @CrossOrigin(origins = "*")
     @PostMapping("product_image")
     public HTTPResponse<UploadFileResponse> productImageUpload(@RequestParam("file") MultipartFile file) {
         String fileName = fileStorageService.storeFile(file);
@@ -34,7 +33,6 @@ public class FileController {
                 file.getContentType(), file.getSize()));
     }
 
-    @CrossOrigin(origins = "*")
     @GetMapping("product_image/{fileName}")
     public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) {
         // Load file as Resource
