@@ -61,7 +61,6 @@ public class AccountDao {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (DisabledException e) {
             return HTTPResponse.<JwtResponse>returnFailure("user: " + authenticationRequest.getUsername() + " is disabled");
-
         } catch (BadCredentialsException e) {
             return HTTPResponse.<JwtResponse>returnFailure("");
         } catch (Exception e) {

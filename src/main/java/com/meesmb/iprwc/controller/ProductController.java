@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-// guide: https://www.callicoder.com/spring-boot-file-upload-download-rest-api-example/
 @RestController
 public class ProductController {
 
@@ -19,7 +18,6 @@ public class ProductController {
     @GetMapping("/product")
     public HTTPResponse<List<Product>> getProduct(@RequestParam(name="tags", defaultValue = "") String[] tags,
                                                   @RequestParam(name="name", defaultValue = "") String name) {
-
         if (!name.equals("")) {
             return dao.getProductsByName(name, tags);
         }
