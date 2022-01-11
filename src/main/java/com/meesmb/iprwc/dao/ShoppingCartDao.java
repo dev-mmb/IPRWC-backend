@@ -4,14 +4,18 @@ import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.model.ShoppingCart;
+import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.ProductRepository;
+import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
 import com.meesmb.iprwc.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Component
 public class ShoppingCartDao {
@@ -21,6 +25,8 @@ public class ShoppingCartDao {
     ProductRepository productRepository;
     @Autowired
     AccountRepository accountRepository;
+    @Autowired
+    ShoppingCartProductRepository shoppingCartProductRepository;
 
     public HTTPResponse<ShoppingCart> getShoppingCartByAccountId(String AccountEmail) {
         Account account = accountRepository.findByEmail(AccountEmail);
@@ -28,24 +34,45 @@ public class ShoppingCartDao {
         return HTTPResponse.<ShoppingCart>returnSuccess(account.getShoppingCart());
     }
 
-    public HTTPResponse<ShoppingCart> setShoppingCart(String[] productIds, String accountEmail) {
+    public HTTPResponse<ShoppingCart> setShoppingCart(ShoppingCart cart, String accountEmail) {
         Account account = accountRepository.findByEmail(accountEmail);
 
         if (account == null) return HTTPResponse.<ShoppingCart>returnFailure("account not found");
 
         if (account.getShoppingCart() == null) {
-            ShoppingCart cart = new ShoppingCart(new Product[0]);
-            repository.save(cart);
-            account.setShoppingCart(cart);
+            ShoppingCart c = new ShoppingCart(new ShoppingCartProduct[0]);
+            repository.save(c);
+            account.setShoppingCart(c);
         }
+        // remove old products
+        deleteOldShoppingCartProducts(account);
+        // put into db if not exist yet
+        Set<ShoppingCartProduct> n = setShoppingCartProductIds(cart.getProducts());
+        // save them into the account
+        account.getShoppingCart().setProducts(n);
 
-        HashSet<Product> productData = new HashSet<>();
-        for (String productId : productIds) {
-            Optional<Product> p = productRepository.findById(productId);
-            p.ifPresent(productData::add);
-        }
-        account.getShoppingCart().setProducts(productData);
+        this.repository.save(account.getShoppingCart());
         accountRepository.save(account);
         return HTTPResponse.returnSuccess(account.getShoppingCart());
+    }
+
+    Set<ShoppingCartProduct> setShoppingCartProductIds(Set<ShoppingCartProduct> products) {
+        for (ShoppingCartProduct p : products) {
+            if (p.getId() == null) {
+                p.setId(UUID.randomUUID().toString());
+            }
+            this.shoppingCartProductRepository.save(p);
+        }
+        return products;
+    }
+    void deleteOldShoppingCartProducts(Account account) {
+        Set<ShoppingCartProduct> old = account.getShoppingCart().getProducts();
+        account.getShoppingCart().setProducts(new HashSet<>());
+        this.repository.save(account.getShoppingCart());
+
+        for (ShoppingCartProduct p : old) {
+            Optional<ShoppingCartProduct> prod = this.shoppingCartProductRepository.findById(p.getId());
+            prod.ifPresent(shoppingCartProduct -> this.shoppingCartProductRepository.delete(shoppingCartProduct));
+        }
     }
 }

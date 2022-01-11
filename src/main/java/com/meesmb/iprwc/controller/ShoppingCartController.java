@@ -25,9 +25,9 @@ public class ShoppingCartController {
     }
 
     @PostMapping("/cart")
-    public HTTPResponse<ShoppingCart> postShoppingCart(@RequestHeader(name = "Authorization") String token, @RequestBody String[] productIds) {
+    public HTTPResponse<ShoppingCart> postShoppingCart(@RequestHeader(name = "Authorization") String token, @RequestBody ShoppingCart cart) {
         String email = jwtTokenUtil.getUsernameFromToken(token.substring(7));
-        return dao.setShoppingCart(productIds, email);
+        return dao.setShoppingCart(cart, email);
     }
 
 }

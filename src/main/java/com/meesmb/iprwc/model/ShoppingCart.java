@@ -1,5 +1,8 @@
 package com.meesmb.iprwc.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.List;
@@ -12,13 +15,13 @@ public class ShoppingCart {
     @Column(name = "id")
     String id;
 
-    @ManyToMany(targetEntity = Product.class)
-    Set<Product> products = new HashSet<>();
+    @ManyToMany(targetEntity = ShoppingCartProduct.class, fetch = FetchType.EAGER)
+    Set<ShoppingCartProduct> shoppingCartProducts = new HashSet<>();
 
     protected ShoppingCart() {}
-    public ShoppingCart(Product[] products) {
+    public ShoppingCart(ShoppingCartProduct[] products) {
         this.id = UUID.randomUUID().toString();
-        if (products != null) this.products = new HashSet<>(List.of(products));
+        if (products != null) this.shoppingCartProducts = new HashSet<>(List.of(products));
 
     }
 
@@ -30,11 +33,11 @@ public class ShoppingCart {
         this.id = id;
     }
 
-    public Set<Product> getProducts() {
-        return products;
+    public Set<ShoppingCartProduct> getProducts() {
+        return shoppingCartProducts;
     }
 
-    public void setProducts(Set<Product> products) {
-        this.products = products;
+    public void setProducts(Set<ShoppingCartProduct> shoppingCartProducts) {
+        this.shoppingCartProducts = shoppingCartProducts;
     }
 }
