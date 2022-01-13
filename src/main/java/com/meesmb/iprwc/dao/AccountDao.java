@@ -47,8 +47,6 @@ public class AccountDao {
     @Autowired
     ShoppingCartRepository shoppingCartRepository;
 
-    Pattern BCRYPT_PATTERN = Pattern.compile("\\A\\$2a?\\$\\d\\d\\$[./0-9A-Za-z]{53}");
-
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
@@ -56,9 +54,6 @@ public class AccountDao {
     public boolean createUser(AccountRequestObject accObj, RoleName role) {
         if (doesEmailExist(accObj.getEmail()))
             return false;
-        if (!BCRYPT_PATTERN.matcher(accObj.getPassword()).matches()) {
-            return false;
-        }
 
         Account account = new Account();
         account.setEmail(accObj.getEmail());

@@ -55,8 +55,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
 
         AccountRequestObject obj = new AccountRequestObject();
         obj.setEmail("test@test.com");
-        // $2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm = test
-        obj.setPassword("$2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm");
+        // 098f6bcd4621d373cade4e832627b4f6 = test
+        obj.setPassword("098f6bcd4621d373cade4e832627b4f6");
         accountDao.createUser(obj, RoleName.ADMIN);
 
         hasAlreadyBeenSetup = true;
