@@ -14,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CustomAuthenticationManager implements AuthenticationManager {
@@ -24,10 +25,16 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
     CustomUserDetailsService userDetailsService;
 
+    Pattern BCRYPT_PATTERN = Pattern.compile("\\A\\$2a?\\$\\d\\d\\$[./0-9A-Za-z]{53}");
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getPrincipal() + "";
         String password = authentication.getCredentials() + "";
+
+        if (!BCRYPT_PATTERN.matcher(password).matches()) {
+            throw new BadCredentialsException("password does not look like bcrypt");
+        }
 
         Account account = accountRepository.findByEmail(email);
         if (account == null) {

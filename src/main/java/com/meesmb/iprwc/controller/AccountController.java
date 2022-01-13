@@ -26,7 +26,7 @@ public class AccountController {
     public HTTPResponse<String> createUser(@RequestBody AccountRequestObject acc) {
         boolean success = accountDao.createUser(acc, RoleName.USER);
         if (success) return HTTPResponse.returnSuccess("success");
-        else return HTTPResponse.returnFailure("email already exists");
+        else return HTTPResponse.returnFailure("something went wrong");
     }
 
 }
