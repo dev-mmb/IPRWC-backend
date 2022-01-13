@@ -6,8 +6,12 @@ import com.meesmb.iprwc.jwt.JwtRequest;
 import com.meesmb.iprwc.jwt.JwtResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
+import com.meesmb.iprwc.model.ShoppingCart;
+import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.RoleRepository;
+import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
+import com.meesmb.iprwc.repository.ShoppingCartRepository;
 import com.meesmb.iprwc.request_objects.AccountRequestObject;
 import com.meesmb.iprwc.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,18 +43,29 @@ public class AccountDao {
     @Autowired
     RoleRepository roleRepository;
 
+    @Autowired
+    ShoppingCartRepository shoppingCartRepository;
+
     public Account getByEmail(String email) {
         return accountRepository.findByEmail(email);
     }
 
-    public boolean createUser(AccountRequestObject accObj) {
+    public boolean createUser(AccountRequestObject accObj, RoleName role) {
         if (doesEmailExist(accObj.getEmail()))
             return false;
 
         Account account = new Account();
         account.setEmail(accObj.getEmail());
-        account.setPassword(accObj.getPassword());
-        account.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(RoleName.USER.getValue()))));
+        String salt = userDetailsService.generateSalt();
+        String hashedPassword = userDetailsService.getSaltedPassword(accObj.getPassword(), salt);
+
+        account.setPassword(hashedPassword);
+        account.setSalt(salt);
+
+        account.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role.getValue()))));
+        ShoppingCart s = new ShoppingCart(new ShoppingCartProduct[0]);
+        shoppingCartRepository.save(s);
+        account.setShoppingCart(s);
         accountRepository.save(account);
         return true;
     }

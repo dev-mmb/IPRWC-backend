@@ -1,11 +1,13 @@
 package com.meesmb.iprwc.config;
 
+import com.meesmb.iprwc.dao.AccountDao;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Privilege;
 import com.meesmb.iprwc.model.Role;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.PrivilegeRepository;
 import com.meesmb.iprwc.repository.RoleRepository;
+import com.meesmb.iprwc.request_objects.AccountRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -29,6 +31,9 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     @Autowired
     PrivilegeRepository privilegeRepository;
 
+    @Autowired
+    AccountDao accountDao;
+
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -48,13 +53,11 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         read.add(readPrivilege);
         createRoleIfNotFound(RoleName.USER, read);
 
-        com.meesmb.iprwc.model.Role adminRole = roleRepository.findByName(RoleName.ADMIN.getValue());
-        Account user = new Account();
-        user.setEmail("test@test.com");
+        AccountRequestObject obj = new AccountRequestObject();
+        obj.setEmail("test@test.com");
         // $2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm = test
-        user.setPassword("$2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm");
-        user.setRoles(new HashSet<>(Arrays.asList(adminRole)));
-        accountRepository.save(user);
+        obj.setPassword("$2a$12$I39YAp1H1WGp1TvQmdf4ROHxv4xK0elK0PHqZiD4Mn6Td19GVX1Cm");
+        accountDao.createUser(obj, RoleName.ADMIN);
 
         hasAlreadyBeenSetup = true;
     }

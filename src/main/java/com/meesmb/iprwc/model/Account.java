@@ -1,7 +1,6 @@
 package com.meesmb.iprwc.model;
 
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -17,6 +16,9 @@ public class Account {
 
     @Column
     String password;
+
+    @Column
+    String salt;
 
     @ManyToMany(targetEntity = Role.class)
     private Set<Role> roles;
@@ -67,5 +69,13 @@ public class Account {
 
     public void setShoppingCart(ShoppingCart shoppingCart) {
         this.shoppingCart = shoppingCart;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 }

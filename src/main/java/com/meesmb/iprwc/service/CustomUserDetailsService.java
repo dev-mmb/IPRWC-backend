@@ -14,11 +14,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import javax.transaction.Transactional;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +53,15 @@ public class CustomUserDetailsService implements UserDetailsService {
     private Collection<? extends GrantedAuthority> getAuthorities(Collection<Role> roles) {
 
         return getGrantedAuthorities(getPrivileges(roles));
+    }
+
+    public String getSaltedPassword(String password, String salt) {
+        return DigestUtils.md5DigestAsHex((password + salt).getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String generateSalt() {
+       byte[] b =  KeyGenerators.secureRandom(10).generateKey();
+       return Base64.getEncoder().encodeToString(b);
     }
 
     private List<String> getPrivileges(Collection<Role> roles) {

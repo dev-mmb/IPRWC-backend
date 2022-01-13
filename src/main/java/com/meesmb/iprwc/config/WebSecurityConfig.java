@@ -1,5 +1,6 @@
 package com.meesmb.iprwc.config;
 
+import com.meesmb.iprwc.jwt.CustomAuthenticationManager;
 import com.meesmb.iprwc.jwt.JwtAuthenticationEntryPoint;
 import com.meesmb.iprwc.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 @Configuration
@@ -52,18 +54,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // user for matching credentials
         // Use BCryptPasswordEncoder
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+        //auth.parentAuthenticationManager(this.authenticationManager());
     }
 
     // needs to be static to avoid cyclic dependency injection for some reason
     @Bean
     public static PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(10, new SecureRandom());
     }
 
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+        return new CustomAuthenticationManager();
     }
 
     @Override
