@@ -1,19 +1,16 @@
 package com.meesmb.iprwc.service;
 
-import com.meesmb.iprwc.dao.AccountDao;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Privilege;
 import com.meesmb.iprwc.model.Role;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
