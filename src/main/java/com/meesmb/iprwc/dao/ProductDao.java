@@ -9,10 +9,7 @@ import com.meesmb.iprwc.request_objects.ProductRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class ProductDao {
@@ -65,4 +62,11 @@ public class ProductDao {
         return HTTPResponse.<List<Product>>returnSuccess(products);
     }
 
+    public HTTPResponse<Product> changeProduct(Product p) {
+        Optional<Product> old = productRepository.findById(p.getId());
+        if (old.isEmpty()) return HTTPResponse.returnFailure("could not find product id");
+        p.setId(old.get().getId());
+        productRepository.save(p);
+        return HTTPResponse.returnSuccess(p);
+    }
 }

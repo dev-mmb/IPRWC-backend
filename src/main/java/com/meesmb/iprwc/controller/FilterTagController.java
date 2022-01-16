@@ -4,7 +4,6 @@ import com.meesmb.iprwc.dao.FilterTagDao;
 import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.FilterGroup;
 import com.meesmb.iprwc.model.FilterTag;
-import com.meesmb.iprwc.request_objects.FilterTagRequestObject;
 import com.meesmb.iprwc.request_objects.FilterGroupRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,7 @@ public class FilterTagController {
 
 
     @PostMapping("filter_tag")
-    public HTTPResponse<FilterTag[]> postTag(@RequestBody FilterTagRequestObject[] obj) {
+    public HTTPResponse<FilterTag[]> postTag(@RequestBody FilterTag[] obj) {
         return dao.addFilterTags(obj);
     }
 

@@ -7,10 +7,7 @@ import com.meesmb.iprwc.jwt.JwtRequest;
 import com.meesmb.iprwc.jwt.JwtResponse;
 import com.meesmb.iprwc.request_objects.AccountRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class AccountController {
@@ -28,5 +25,10 @@ public class AccountController {
         boolean success = accountDao.createUser(acc, RoleName.USER);
         if (success) return HTTPResponse.returnSuccess("success");
         else return HTTPResponse.returnFailure("something went wrong");
+    }
+
+    @GetMapping("/jwt/validate")
+    HTTPResponse<Boolean> hasTokenExpired(@RequestHeader(name = "Authorization") String token) {
+        return accountDao.hasTokenExpired(token);
     }
 }

@@ -88,6 +88,19 @@ public class AccountDao {
         return HTTPResponse.<JwtResponse>returnSuccess(new JwtResponse(token));
     }
 
+    public HTTPResponse<Boolean> hasTokenExpired(String token) {
+        if (token.contains("Bearer ")) {
+            token = token.substring(7);
+        }
+        try {
+            // return true if the token is NOT expired
+            return HTTPResponse.returnSuccess(!jwtTokenUtil.isTokenExpired(token));
+        }
+        catch (Exception e) {
+            return HTTPResponse.returnFailure("token is expired");
+        }
+    }
+
     private boolean doesEmailExist(String email) {
         Account account = accountRepository.findByEmail(email);
         return account != null;

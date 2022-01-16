@@ -36,7 +36,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/filter_tag",
             "/filter_group",
             "/product",
-            "/account/create"
+            "/account/create",
+            "/jwt/validate"
     };
 
     @Autowired

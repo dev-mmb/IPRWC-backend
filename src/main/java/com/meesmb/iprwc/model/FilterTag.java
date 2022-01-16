@@ -31,7 +31,7 @@ public class FilterTag {
         return filterGroup;
     }
 
-    public void setFilterGroupName(FilterGroup filterGroup) {
+    public void setFilterGroup(FilterGroup filterGroup) {
         this.filterGroup = filterGroup;
     }
 }
