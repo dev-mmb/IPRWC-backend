@@ -24,14 +24,14 @@ public class FileController {
     @Autowired
     private FileStorageService fileStorageService;
 
-    @PostMapping("product_image")
+    @PostMapping("/product_image")
     public HTTPResponse<Boolean> productImageUpload(@RequestParam("file") MultipartFile file) {
         fileStorageService.storeFile(file);
 
         return HTTPResponse.returnSuccess(true);
     }
 
-    @GetMapping("product_image/get/{fileName}")
+    @GetMapping("/product_image/get/{fileName}")
     public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) throws Exception {
         return fileStorageService.loadFileAsResource(fileName);
     }
