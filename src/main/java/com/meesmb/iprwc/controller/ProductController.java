@@ -36,7 +36,7 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public HTTPResponse<Product[]> postProduct(@RequestBody Product[] products) {
+    public HTTPResponse<Product[]> postProduct(@RequestHeader(name = "Authorization", defaultValue = "") String token, @RequestBody Product[] products) {
         return dao.addProducts(products);
     }
 

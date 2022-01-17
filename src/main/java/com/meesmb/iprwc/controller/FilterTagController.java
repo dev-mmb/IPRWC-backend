@@ -25,7 +25,6 @@ public class FilterTagController {
         return dao.getFilterTagsByGroup(group);
     }
 
-
     @PostMapping("filter_tag")
     public HTTPResponse<FilterTag[]> postTag(@RequestBody FilterTag[] obj) {
         return dao.addFilterTags(obj);

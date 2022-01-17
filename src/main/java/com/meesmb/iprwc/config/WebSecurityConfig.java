@@ -6,6 +6,7 @@ import com.meesmb.iprwc.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -32,13 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // define urls that don't need a jwt token
     public static final String[] UNSECURED_URLS = {
             "/account/authenticate",
-            "/product_image/{fileName}",
-            "/filter_tag",
-            "/filter_group",
-            "/product",
+            "/product_image/get/{fileName}",
             "/account/create",
-            "/jwt/validate",
-            "product_image"
+            "/jwt/validate"
     };
 
     @Autowired
@@ -74,8 +71,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().configurationSource(this.corsConfigurationSource()).and()
-                .authorizeRequests().antMatchers(UNSECURED_URLS).permitAll().anyRequest().authenticated()
-                .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+                .authorizeRequests().antMatchers(UNSECURED_URLS).permitAll().and()
+                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/**").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/filter_tag").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/filter_group").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/order").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/product").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.PUT, "/product").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/product_image").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
