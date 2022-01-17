@@ -72,10 +72,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().cors().configurationSource(this.corsConfigurationSource()).and()
                 .authorizeRequests().antMatchers(UNSECURED_URLS).permitAll().and()
-                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/**").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.DELETE, "/order").hasAnyAuthority(RoleName.USER.getValue()).and()
+                .authorizeRequests().antMatchers(HttpMethod.POST, "/order").hasAnyAuthority(RoleName.USER.getValue()).and()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/filter_tag").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/filter_group").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
-                .authorizeRequests().antMatchers(HttpMethod.POST, "/order").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/product").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
                 .authorizeRequests().antMatchers(HttpMethod.PUT, "/product").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
                 .authorizeRequests().antMatchers(HttpMethod.POST, "/product_image").hasAnyAuthority(RoleName.ADMIN.getValue()).and()
