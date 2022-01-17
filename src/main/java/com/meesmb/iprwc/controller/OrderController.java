@@ -22,4 +22,9 @@ public class OrderController {
     public HTTPResponse<ProductsOrder> convertToOrder(@RequestHeader(name = "Authorization") String token) {
         return orderDao.convertAccountShoppingCartToOrder(token);
     }
+
+    @DeleteMapping("/order")
+    public HTTPResponse<String> deleteOrder(@RequestHeader(name = "Authorization") String token, @RequestBody ProductsOrder order) {
+        return orderDao.deleteOrder(token, order);
+    }
 }

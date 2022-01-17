@@ -28,7 +28,7 @@ public class ProductDao {
         return HTTPResponse.returnSuccess(p);
     }
 
-    public HTTPResponse<Product[]> addProducts(ProductRequestObject[] requestObjects) {
+    public HTTPResponse<Product[]> addProducts(Product[] requestObjects) {
         Product[] returnValues = new Product[requestObjects.length];
 
         for (int i = 0; i < requestObjects.length; i++) {
@@ -43,14 +43,12 @@ public class ProductDao {
         return HTTPResponse.<Product[]>returnSuccess(returnValues);
     }
 
-    public HTTPResponse<Product> addProduct(ProductRequestObject obj) {
-        List<String> tagIds = Arrays.asList(obj.getFilterTags());
-        List<FilterTag> tags = filterTagRepository.findAllById(tagIds);
+    public HTTPResponse<Product> addProduct(Product obj) {
 
-        Product p = new Product(obj.getName(), obj.getPrice(), obj.getDescription(), obj.getSpecs(), tags, obj.getImage());
-        productRepository.save(p);
+        obj.setId(UUID.randomUUID().toString());
+        productRepository.save(obj);
 
-        return HTTPResponse.<Product>returnSuccess(p);
+        return HTTPResponse.<Product>returnSuccess(obj);
     }
 
     public HTTPResponse<List<Product>> getProductsByName(String name, String[] tags) {

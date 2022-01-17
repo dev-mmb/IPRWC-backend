@@ -5,6 +5,7 @@ import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.ProductsOrder;
 import com.meesmb.iprwc.model.ShoppingCart;
+import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.OrderRepository;
 import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class OrderDao {
@@ -50,5 +52,18 @@ public class OrderDao {
         accountRepository.save(account);
         orderRepository.save(order);
         return HTTPResponse.returnSuccess(order);
+    }
+
+    public HTTPResponse<String> deleteOrder(String token, ProductsOrder order) {
+        String email = jwtTokenUtil.getUsernameFromToken(token);
+        Account account = accountRepository.findByEmail(email);
+        if (account == null) return HTTPResponse.returnFailure("could not find email from token");
+        Optional<ProductsOrder> o = orderRepository.findById(order.getId());
+        if (o.isEmpty()) return HTTPResponse.returnFailure("could not find order");
+        orderRepository.delete(o.get());
+        for (ShoppingCartProduct p : o.get().getShoppingCartProducts()) {
+            shoppingCartProductRepository.delete(p);
+        }
+        return HTTPResponse.returnSuccess("SUCCESS");
     }
 }

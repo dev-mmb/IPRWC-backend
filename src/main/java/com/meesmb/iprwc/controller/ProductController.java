@@ -39,7 +39,7 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public HTTPResponse<Product[]> postProduct(@RequestBody ProductRequestObject[] products) {
+    public HTTPResponse<Product[]> postProduct(@RequestBody Product[] products) {
         return dao.addProducts(products);
     }
 
