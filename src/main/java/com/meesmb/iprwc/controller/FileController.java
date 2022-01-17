@@ -3,7 +3,10 @@ package com.meesmb.iprwc.controller;
 import com.meesmb.iprwc.dao.FileStorageService;
 import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.http_response.UploadFileResponse;
+import org.hibernate.SessionFactory;
+import org.hibernate.ejb.HibernateEntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -22,35 +25,15 @@ public class FileController {
     private FileStorageService fileStorageService;
 
     @PostMapping("product_image")
-    public HTTPResponse<UploadFileResponse> productImageUpload(@RequestParam("file") MultipartFile file) {
-        String fileName = fileStorageService.storeFile(file);
-        String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/downloadFile/")
-                .path(fileName)
-                .toUriString();
+    public HTTPResponse<Boolean> productImageUpload(@RequestParam("file") MultipartFile file) {
+        fileStorageService.storeFile(file);
 
-        return HTTPResponse.returnSuccess(new UploadFileResponse(fileName, fileDownloadUri,
-                file.getContentType(), file.getSize()));
+        return HTTPResponse.returnSuccess(true);
     }
 
     @GetMapping("product_image/{fileName}")
-    public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) {
-        // Load file as Resource
-        Resource resource = fileStorageService.loadFileAsResource(fileName);
-        String contentType = null;
-        try {
-            contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-        } catch (IOException ex) {
-            // silentyl fail for now...
-        }
-        // Fallback to the default content type if type could not be determined
-        if(contentType == null) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
+    public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) throws Exception {
+        return fileStorageService.loadFileAsResource(fileName);
     }
+
 }
