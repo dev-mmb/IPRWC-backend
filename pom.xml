@@ -10,13 +10,12 @@
 	</parent>
 	<groupId>com.meesmb</groupId>
 	<artifactId>iprwc</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0</version>
 	<name>iprwc</name>
 	<description>iprwc-webshop-backend</description>
 	<properties>
-		<java.version>11</java.version>
-		<maven.compiler.source>16</maven.compiler.source>
-		<maven.compiler.target>16</maven.compiler.target>
+		<maven.compiler.source>11</maven.compiler.source>
+		<maven.compiler.target>11</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<dependency>
