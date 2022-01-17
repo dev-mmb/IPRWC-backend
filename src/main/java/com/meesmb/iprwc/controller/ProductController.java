@@ -8,12 +8,9 @@ import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.model.Role;
-import com.meesmb.iprwc.request_objects.ProductRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.http.HttpResponse;
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
