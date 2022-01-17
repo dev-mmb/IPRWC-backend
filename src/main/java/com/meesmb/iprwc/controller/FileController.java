@@ -31,7 +31,7 @@ public class FileController {
         return HTTPResponse.returnSuccess(true);
     }
 
-    @GetMapping("product_image/{fileName}")
+    @GetMapping("product_image/get/{fileName}")
     public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) throws Exception {
         return fileStorageService.loadFileAsResource(fileName);
     }
