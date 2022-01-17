@@ -25,10 +25,10 @@ public class FileController {
     private FileStorageService fileStorageService;
 
     @PostMapping("/product_image")
-    public HTTPResponse<Boolean> productImageUpload(@RequestParam("file") MultipartFile file) {
-        fileStorageService.storeFile(file);
+    public HTTPResponse<String> productImageUpload(@RequestParam("file") MultipartFile file) {
+        String n = fileStorageService.storeFile(file);
 
-        return HTTPResponse.returnSuccess(true);
+        return HTTPResponse.returnSuccess(n);
     }
 
     @GetMapping("/product_image/get/{fileName}")
