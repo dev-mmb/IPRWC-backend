@@ -3,9 +3,7 @@ package com.meesmb.iprwc.controller;
 import com.meesmb.iprwc.dao.ShoppingCartDao;
 import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
-import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.ShoppingCart;
-import com.meesmb.iprwc.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

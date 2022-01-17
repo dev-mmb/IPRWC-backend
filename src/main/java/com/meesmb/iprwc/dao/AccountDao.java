@@ -6,6 +6,7 @@ import com.meesmb.iprwc.jwt.JwtRequest;
 import com.meesmb.iprwc.jwt.JwtResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
+import com.meesmb.iprwc.model.Role;
 import com.meesmb.iprwc.model.ShoppingCart;
 import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
@@ -64,6 +65,7 @@ public class AccountDao {
         account.setSalt(salt);
 
         account.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role.getValue()))));
+
         ShoppingCart s = new ShoppingCart(new ShoppingCartProduct[0]);
         shoppingCartRepository.save(s);
         account.setShoppingCart(s);
