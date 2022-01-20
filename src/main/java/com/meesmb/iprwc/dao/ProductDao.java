@@ -1,11 +1,9 @@
 package com.meesmb.iprwc.dao;
 
 import com.meesmb.iprwc.http_response.HTTPResponse;
-import com.meesmb.iprwc.model.FilterTag;
 import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.repository.FilterTagRepository;
 import com.meesmb.iprwc.repository.ProductRepository;
-import com.meesmb.iprwc.request_objects.ProductRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -54,9 +52,9 @@ public class ProductDao {
     public HTTPResponse<List<Product>> getProductsByName(String name, String[] tags) {
         List<Product> products = new ArrayList<Product>();
         if (tags.length == 0)
-            products = productRepository.findByNameStartsWithIgnoreCase(name);
+            products = productRepository.findByNameContainsIgnoreCase(name);
         else
-            products = productRepository.findDistinctByNameStartsWithIgnoreCaseAndFilterTags_nameIn(name, tags);
+            products = productRepository.findDistinctByNameContainsIgnoreCaseAndFilterTags_nameIn(name, tags);
         return HTTPResponse.<List<Product>>returnSuccess(products);
     }
 
