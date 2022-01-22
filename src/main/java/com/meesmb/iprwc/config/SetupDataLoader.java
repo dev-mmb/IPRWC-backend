@@ -1,13 +1,11 @@
 package com.meesmb.iprwc.config;
 
 import com.meesmb.iprwc.dao.AccountDao;
-import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.Privilege;
 import com.meesmb.iprwc.model.Role;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.PrivilegeRepository;
 import com.meesmb.iprwc.repository.RoleRepository;
-import com.meesmb.iprwc.request_objects.AccountRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -53,11 +51,8 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
         read.add(readPrivilege);
         createRoleIfNotFound(RoleName.USER, read);
 
-        AccountRequestObject obj = new AccountRequestObject();
-        obj.setEmail("test@test.com");
         // 098f6bcd4621d373cade4e832627b4f6 = test
-        obj.setPassword("098f6bcd4621d373cade4e832627b4f6");
-        accountDao.createUser(obj, RoleName.ADMIN);
+        accountDao.createUser("test@test.com", "098f6bcd4621d373cade4e832627b4f6", RoleName.ADMIN);
 
         hasAlreadyBeenSetup = true;
     }
@@ -74,7 +69,7 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
     }
 
     @Transactional
-    com.meesmb.iprwc.model.Role createRoleIfNotFound(RoleName name, Set<Privilege> privileges) {
+    void createRoleIfNotFound(RoleName name, Set<Privilege> privileges) {
 
         com.meesmb.iprwc.model.Role role = roleRepository.findByName(name.getValue());
         if (role == null) {
@@ -82,6 +77,5 @@ public class SetupDataLoader implements ApplicationListener<ContextRefreshedEven
             role.setPrivileges(privileges);
             roleRepository.save(role);
         }
-        return role;
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CustomAuthenticationManager implements AuthenticationManager {
@@ -28,19 +27,20 @@ public class CustomAuthenticationManager implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        // convert to strings
         String email = authentication.getPrincipal() + "";
         String password = authentication.getCredentials() + "";
 
         Account account = accountRepository.findByEmail(email);
         if (account == null) {
-            throw new BadCredentialsException("1000");
+            throw new BadCredentialsException("");
         }
-
+        // get the hashed and salted password
         String hashedPassword = userDetailsService.getSaltedPassword(password, account.getSalt());
         if (!hashedPassword.equals(account.getPassword())) {
-            throw new BadCredentialsException("1000");
+            throw new BadCredentialsException("");
         }
-
+        // check roles
         Set<Role> roles = account.getRoles();
         return new UsernamePasswordAuthenticationToken(email, null, roles.stream()
                 .map(x -> new SimpleGrantedAuthority(x.getName())).collect(Collectors.toList()));

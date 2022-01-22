@@ -1,11 +1,8 @@
 package com.meesmb.iprwc.dao;
 
 import com.meesmb.iprwc.http_response.HTTPResponse;
-import com.meesmb.iprwc.model.FilterTag;
 import com.meesmb.iprwc.model.Product;
-import com.meesmb.iprwc.repository.FilterTagRepository;
 import com.meesmb.iprwc.repository.ProductRepository;
-import com.meesmb.iprwc.request_objects.ProductRequestObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +13,6 @@ public class ProductDao {
 
     @Autowired
     ProductRepository productRepository;
-    @Autowired
-    FilterTagRepository filterTagRepository;
 
     public HTTPResponse<List<Product>> getAllProducts() {
         return HTTPResponse.returnSuccess(productRepository.findAll());
@@ -29,34 +24,26 @@ public class ProductDao {
     }
 
     public HTTPResponse<Product[]> addProducts(Product[] requestObjects) {
-        Product[] returnValues = new Product[requestObjects.length];
-
-        for (int i = 0; i < requestObjects.length; i++) {
-            HTTPResponse<Product> response = addProduct(requestObjects[i]);
-
-            if (!response.isSuccess())
-                return HTTPResponse.<Product[]>returnFailure(response.getErrorMessage());
-
-            returnValues[i] = response.getData();
+        for (Product product : requestObjects) {
+            addProduct(product);
         }
-
-        return HTTPResponse.<Product[]>returnSuccess(returnValues);
+        return HTTPResponse.<Product[]>returnSuccess(requestObjects);
     }
 
     public HTTPResponse<Product> addProduct(Product obj) {
-
         obj.setId(UUID.randomUUID().toString());
         productRepository.save(obj);
-
         return HTTPResponse.<Product>returnSuccess(obj);
     }
 
     public HTTPResponse<List<Product>> getProductsByName(String name, String[] tags) {
         List<Product> products = new ArrayList<Product>();
-        if (tags.length == 0)
-            products = productRepository.findByNameStartsWithIgnoreCase(name);
-        else
-            products = productRepository.findDistinctByNameStartsWithIgnoreCaseAndFilterTags_nameIn(name, tags);
+        if (tags.length == 0) {
+            products = productRepository.findByNameContainsIgnoreCase(name);
+        }
+        else {
+            products = productRepository.findDistinctByNameContainsIgnoreCaseAndFilterTags_nameIn(name, tags);
+        }
         return HTTPResponse.<List<Product>>returnSuccess(products);
     }
 

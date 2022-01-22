@@ -2,11 +2,9 @@ package com.meesmb.iprwc.dao;
 
 import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.Account;
-import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.model.ShoppingCart;
 import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
-import com.meesmb.iprwc.repository.ProductRepository;
 import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
 import com.meesmb.iprwc.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +19,6 @@ import java.util.UUID;
 public class ShoppingCartDao {
     @Autowired
     ShoppingCartRepository repository;
-    @Autowired
-    ProductRepository productRepository;
     @Autowired
     AccountRepository accountRepository;
     @Autowired
@@ -45,9 +41,9 @@ public class ShoppingCartDao {
             account.setShoppingCart(c);
         }
         // remove old products
-        deleteOldShoppingCartProducts(account);
+        emptyShoppingCart(account);
         // put into db if not exist yet
-        Set<ShoppingCartProduct> n = setShoppingCartProductIds(cart.getProducts());
+        Set<ShoppingCartProduct> n = createAllShoppingCartproducts(cart.getProducts());
         // save them into the account
         account.getShoppingCart().setProducts(n);
 
@@ -56,7 +52,7 @@ public class ShoppingCartDao {
         return HTTPResponse.returnSuccess(account.getShoppingCart());
     }
 
-    Set<ShoppingCartProduct> setShoppingCartProductIds(Set<ShoppingCartProduct> products) {
+    Set<ShoppingCartProduct> createAllShoppingCartproducts(Set<ShoppingCartProduct> products) {
         for (ShoppingCartProduct p : products) {
             if (p.getId() == null) {
                 p.setId(UUID.randomUUID().toString());
@@ -65,11 +61,12 @@ public class ShoppingCartDao {
         }
         return products;
     }
-    void deleteOldShoppingCartProducts(Account account) {
+    // delete all products from a shopping cart
+    void emptyShoppingCart(Account account) {
         Set<ShoppingCartProduct> old = account.getShoppingCart().getProducts();
         account.getShoppingCart().setProducts(new HashSet<>());
         this.repository.save(account.getShoppingCart());
-
+        // all shoppingCartProducts have to be deleted
         for (ShoppingCartProduct p : old) {
             Optional<ShoppingCartProduct> prod = this.shoppingCartProductRepository.findById(p.getId());
             prod.ifPresent(shoppingCartProduct -> this.shoppingCartProductRepository.delete(shoppingCartProduct));

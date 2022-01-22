@@ -15,44 +15,35 @@ import java.util.Optional;
 public class FilterTagDao {
 
     @Autowired
-    FilterTagRepository repository;
+    FilterTagRepository filterTagRepository;
     @Autowired
     FilterGroupRepository filterGroupRepository;
 
     public List<FilterTag> getAllTags() {
-        return repository.findAll();
+        return filterTagRepository.findAll();
     }
     public List<FilterGroup> getAllGroups() {
         return filterGroupRepository.findAll();
     }
 
-    public HTTPResponse<FilterTag[]> addFilterTags(FilterTag[] objects) {
-        FilterTag[] returnValues = new FilterTag[objects.length];
-
-        for (int i = 0; i < objects.length; i++) {
-            HTTPResponse<FilterTag> response = addFilterTag(objects[i]);
-
-            if (!response.isSuccess())
-                return HTTPResponse.<FilterTag[]>returnFailure(response.getErrorMessage());
-
-            returnValues[i] = response.getData();
+    public HTTPResponse<FilterTag[]> addFilterTags(FilterTag[] tags) {
+        for (FilterTag tag : tags) {
+            addFilterTag(tag);
         }
-
-        return HTTPResponse.<FilterTag[]>returnSuccess(returnValues);
+        return HTTPResponse.<FilterTag[]>returnSuccess(tags);
     }
 
-    public HTTPResponse<FilterTag> addFilterTag(FilterTag obj) {
-        Optional<FilterGroup> group = filterGroupRepository.findByName(obj.getFilterGroup().getName());
+    public HTTPResponse<FilterTag> addFilterTag(FilterTag tag) {
+        Optional<FilterGroup> group = filterGroupRepository.findByName(tag.getFilterGroup().getName());
         if (group.isEmpty()) {
-            obj.setFilterGroup(filterGroupRepository.save(obj.getFilterGroup()));
+            addFilterGroup(tag.getFilterGroup().getName());
         }
-        FilterTag tag = new FilterTag(obj.getName(), obj.getFilterGroup());
-        repository.save(tag);
+        filterTagRepository.save(tag);
         return HTTPResponse.<FilterTag>returnSuccess(tag);
     }
 
     public HTTPResponse<List<FilterTag>> getFilterTagsByGroup(String group) {
-        List<FilterTag> tags = repository.findByFilterGroup_name(group);
+        List<FilterTag> tags = filterTagRepository.findByFilterGroup_name(group);
         return HTTPResponse.<List<FilterTag>>returnSuccess(tags);
     }
 

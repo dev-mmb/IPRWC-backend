@@ -43,10 +43,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             } catch (ExpiredJwtException e) {
                 System.err.println("JWT Token has expired");
             }
-
         }
 
-        // Once we get the token validate it.
+        // signature is already checked by this point
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             validateToken(email, jwtToken, request);
         }
