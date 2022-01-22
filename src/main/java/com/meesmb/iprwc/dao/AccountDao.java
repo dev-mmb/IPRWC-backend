@@ -6,14 +6,11 @@ import com.meesmb.iprwc.jwt.JwtRequest;
 import com.meesmb.iprwc.jwt.JwtResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
-import com.meesmb.iprwc.model.Role;
 import com.meesmb.iprwc.model.ShoppingCart;
 import com.meesmb.iprwc.model.ShoppingCartProduct;
 import com.meesmb.iprwc.repository.AccountRepository;
 import com.meesmb.iprwc.repository.RoleRepository;
-import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
 import com.meesmb.iprwc.repository.ShoppingCartRepository;
-import com.meesmb.iprwc.request_objects.AccountRequestObject;
 import com.meesmb.iprwc.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.regex.Pattern;
 
 @Component
 public class AccountDao {
@@ -48,24 +44,21 @@ public class AccountDao {
     @Autowired
     ShoppingCartRepository shoppingCartRepository;
 
-    public Account getByEmail(String email) {
-        return accountRepository.findByEmail(email);
-    }
 
-    public boolean createUser(AccountRequestObject accObj, RoleName role) {
-        if (doesEmailExist(accObj.getEmail()))
+    public boolean createUser(String email, String password, RoleName role) {
+        if (doesEmailExist(email))
             return false;
 
         Account account = new Account();
-        account.setEmail(accObj.getEmail());
+        account.setEmail(email);
+        // salt and hash password
         String salt = userDetailsService.generateSalt();
-        String hashedPassword = userDetailsService.getSaltedPassword(accObj.getPassword(), salt);
-
+        String hashedPassword = userDetailsService.getSaltedPassword(password, salt);
         account.setPassword(hashedPassword);
         account.setSalt(salt);
-
+        // set role
         account.setRoles(new HashSet<>(Arrays.asList(roleRepository.findByName(role.getValue()))));
-
+        // create a new shopping cart for this account
         ShoppingCart s = new ShoppingCart(new ShoppingCartProduct[0]);
         shoppingCartRepository.save(s);
         account.setShoppingCart(s);
@@ -79,10 +72,8 @@ public class AccountDao {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (DisabledException e) {
             return HTTPResponse.<JwtResponse>returnFailure("user: " + authenticationRequest.getUsername() + " is disabled");
-        } catch (BadCredentialsException e) {
-            return HTTPResponse.<JwtResponse>returnFailure("");
         } catch (Exception e) {
-            System.out.println(e);
+            return HTTPResponse.<JwtResponse>returnFailure("");
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
@@ -90,17 +81,13 @@ public class AccountDao {
         return HTTPResponse.<JwtResponse>returnSuccess(new JwtResponse(token));
     }
 
-    public HTTPResponse<Boolean> hasTokenExpired(String token) {
+    public HTTPResponse<Boolean> isTokenValid(String token) {
         if (token.contains("Bearer ")) {
             token = token.substring(7);
         }
-        try {
-            // return true if the token is NOT expired
-            return HTTPResponse.returnSuccess(!jwtTokenUtil.isTokenExpired(token));
-        }
-        catch (Exception e) {
-            return HTTPResponse.returnFailure("token is expired");
-        }
+        boolean isExpired = jwtTokenUtil.isTokenExpired(token);
+        // if token is expired it is no longer valid
+        return HTTPResponse.returnSuccess(!isExpired);
     }
 
     private boolean doesEmailExist(String email) {

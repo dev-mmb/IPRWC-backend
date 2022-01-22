@@ -25,6 +25,6 @@ public class OrderController {
 
     @DeleteMapping("/order")
     public HTTPResponse<String> deleteOrder(@RequestHeader(name = "Authorization") String token, @RequestBody ProductsOrder order) {
-        return orderDao.deleteOrder(token, order);
+        return orderDao.deleteOrder(order);
     }
 }

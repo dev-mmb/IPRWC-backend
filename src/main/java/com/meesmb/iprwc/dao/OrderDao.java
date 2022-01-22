@@ -31,17 +31,15 @@ public class OrderDao {
     JwtTokenUtil jwtTokenUtil;
 
     public HTTPResponse<List<ProductsOrder>> getAccountsOrders(String token) {
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-        Account account = accountRepository.findByEmail(email);
-        if (account == null) return HTTPResponse.returnFailure("could not find email from token");
+        // no need to check for null, a token can only exist if a token was generated for it.
+        Account account = getAccountFromToken(token);
         List<ProductsOrder> orders = orderRepository.findByAccount(account.getId());
         return HTTPResponse.returnSuccess(orders);
     }
 
     public HTTPResponse<ProductsOrder> convertAccountShoppingCartToOrder(String token) {
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-        Account account = accountRepository.findByEmail(email);
-        if (account == null) return HTTPResponse.returnFailure("could not find email from token");
+        Account account = getAccountFromToken(token);
+        // create order
         ShoppingCart cart = account.getShoppingCart();
         ProductsOrder order = new ProductsOrder();
         order.setAccount(account.getId());
@@ -54,10 +52,7 @@ public class OrderDao {
         return HTTPResponse.returnSuccess(order);
     }
 
-    public HTTPResponse<String> deleteOrder(String token, ProductsOrder order) {
-        String email = jwtTokenUtil.getUsernameFromToken(token);
-        Account account = accountRepository.findByEmail(email);
-        if (account == null) return HTTPResponse.returnFailure("could not find email from token");
+    public HTTPResponse<String> deleteOrder(ProductsOrder order) {
         Optional<ProductsOrder> o = orderRepository.findById(order.getId());
         if (o.isEmpty()) return HTTPResponse.returnFailure("could not find order");
         orderRepository.delete(o.get());
@@ -65,5 +60,10 @@ public class OrderDao {
             shoppingCartProductRepository.delete(p);
         }
         return HTTPResponse.returnSuccess("SUCCESS");
+    }
+
+    private Account getAccountFromToken(String token) {
+        String email = jwtTokenUtil.getUsernameFromToken(token);
+        return accountRepository.findByEmail(email);
     }
 }
