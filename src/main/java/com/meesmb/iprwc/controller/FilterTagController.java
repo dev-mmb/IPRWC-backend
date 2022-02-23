@@ -26,8 +26,8 @@ public class FilterTagController {
     }
 
     @PostMapping("filter_tag")
-    public ResponseEntity<FilterTag[]> postTag(@RequestBody FilterTag[] obj) {
-        return dao.addFilterTags(obj);
+    public ResponseEntity<FilterTag[]> postTag(@RequestBody FilterTag[] tags) {
+        return dao.addFilterTags(tags);
     }
 
     @GetMapping("filter_group")
@@ -37,7 +37,7 @@ public class FilterTagController {
     }
 
     @PostMapping("filter_group")
-    public ResponseEntity<FilterGroup> postGroup(@RequestBody FilterGroup obj) {
-        return dao.addFilterGroup(obj.getName());
+    public ResponseEntity<FilterGroup> postGroup(@RequestBody FilterGroup group) {
+        return dao.addFilterGroup(group.getName());
     }
 }

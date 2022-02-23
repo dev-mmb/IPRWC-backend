@@ -35,7 +35,7 @@ public class ProductController {
     }
 
     @PutMapping("/product")
-    public ResponseEntity<Product> changeProduct(@RequestBody Product p) {
-        return dao.changeProduct(p);
+    public ResponseEntity<Product> changeProduct(@RequestBody Product product) {
+        return dao.changeProduct(product);
     }
 }

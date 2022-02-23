@@ -14,7 +14,7 @@ public class OrderController {
     OrderDao orderDao;
 
     @GetMapping("/order")
-    public ResponseEntity<List<ProductsOrder>> getOrders(@RequestHeader(name = "Authorization") String token) {
+    public ResponseEntity<List<ProductsOrder>> getOrdersFromAccountInToken(@RequestHeader(name = "Authorization") String token) {
         return orderDao.getAccountsOrders(token);
     }
 

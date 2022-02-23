@@ -19,21 +19,21 @@ public class ProductDao {
         return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
     }
 
-    public ResponseEntity<List<Product>> getProductsByTags(String[] tags) {
-        List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tags);
+    public ResponseEntity<List<Product>> getProductsByTags(String[] tagNames) {
+        List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tagNames);
         return new ResponseEntity<List<Product>>(p, HttpStatus.OK);
     }
 
-    public ResponseEntity<Product[]> addProducts(Product[] requestObjects) {
-        for (Product product : requestObjects) {
+    public ResponseEntity<Product[]> addProducts(Product[] products) {
+        for (Product product : products) {
             addProduct(product);
         }
-        return new ResponseEntity<Product[]>(requestObjects, HttpStatus.OK);
+        return new ResponseEntity<Product[]>(products, HttpStatus.OK);
     }
 
-    public void addProduct(Product obj) {
-        obj.setId(UUID.randomUUID().toString());
-        productRepository.save(obj);
+    public void addProduct(Product product) {
+        product.setId(UUID.randomUUID().toString());
+        productRepository.save(product);
     }
 
     public ResponseEntity<List<Product>> getProductsByName(String name, String[] tags) {
@@ -47,11 +47,11 @@ public class ProductDao {
         return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
     }
 
-    public ResponseEntity<Product> changeProduct(Product p) {
-        Optional<Product> old = productRepository.findById(p.getId());
-        if (old.isEmpty()) return new ResponseEntity("could not find product id", HttpStatus.NOT_FOUND);
-        p.setId(old.get().getId());
-        productRepository.save(p);
-        return new ResponseEntity<Product>(p, HttpStatus.OK);
+    public ResponseEntity<Product> changeProduct(Product product) {
+        Optional<Product> oldProduct = productRepository.findById(product.getId());
+        if (oldProduct.isEmpty()) return new ResponseEntity("could not find product id", HttpStatus.NOT_FOUND);
+        product.setId(oldProduct.get().getId());
+        productRepository.save(product);
+        return new ResponseEntity<Product>(product, HttpStatus.OK);
     }
 }

@@ -17,13 +17,13 @@ public class AccountController {
     AccountDao accountDao;
 
     @PostMapping("/account/authenticate")
-    public ResponseEntity<JwtResponse> createAuthToken(@RequestBody Account authenticationRequest) {
-        return accountDao.authenticate(new JwtRequest(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
+    public ResponseEntity<JwtResponse> createAuthToken(@RequestBody Account account) {
+        return accountDao.authenticate(new JwtRequest(account.getEmail(), account.getPassword()));
     }
 
     @PostMapping("/account/create")
-    public ResponseEntity<String> createUser(@RequestBody Account acc) {
-        boolean success = accountDao.createUser(acc.getEmail(), acc.getPassword(), RoleName.USER);
+    public ResponseEntity<String> createUser(@RequestBody Account account) {
+        boolean success = accountDao.createUser(account.getEmail(), account.getPassword(), RoleName.USER);
         if (success) {
             return new ResponseEntity<String>("success", HttpStatus.OK);
         }

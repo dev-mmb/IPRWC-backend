@@ -19,7 +19,7 @@ import java.util.UUID;
 @Component
 public class ShoppingCartDao {
     @Autowired
-    ShoppingCartRepository repository;
+    ShoppingCartRepository shoppingCartRepository;
     @Autowired
     AccountRepository accountRepository;
     @Autowired
@@ -38,7 +38,7 @@ public class ShoppingCartDao {
 
         if (account.getShoppingCart() == null) {
             ShoppingCart c = new ShoppingCart(new ShoppingCartProduct[0]);
-            repository.save(c);
+            shoppingCartRepository.save(c);
             account.setShoppingCart(c);
         }
         // remove old products
@@ -48,7 +48,7 @@ public class ShoppingCartDao {
         // save them into the account
         account.getShoppingCart().setProducts(n);
 
-        this.repository.save(account.getShoppingCart());
+        this.shoppingCartRepository.save(account.getShoppingCart());
         accountRepository.save(account);
         return new ResponseEntity<ShoppingCart>(account.getShoppingCart(), HttpStatus.OK);
     }
@@ -67,7 +67,7 @@ public class ShoppingCartDao {
     void emptyShoppingCart(Account account) {
         Set<ShoppingCartProduct> old = account.getShoppingCart().getProducts();
         account.getShoppingCart().setProducts(new HashSet<>());
-        this.repository.save(account.getShoppingCart());
+        this.shoppingCartRepository.save(account.getShoppingCart());
         // all shoppingCartProducts have to be deleted
         for (ShoppingCartProduct p : old) {
             Optional<ShoppingCartProduct> prod = this.shoppingCartProductRepository.findById(p.getId());

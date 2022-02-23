@@ -23,7 +23,7 @@ public class FileController {
     }
 
     @GetMapping("/product_image/get/{fileName}")
-    public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Resource> getProductImage(@PathVariable("fileName") String fileName) throws Exception {
         return fileStorageService.loadFileAsResource(fileName);
     }
 

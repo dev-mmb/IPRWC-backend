@@ -43,13 +43,13 @@ public class FilterTagDao {
         filterTagRepository.save(tag);
     }
 
-    public ResponseEntity<List<FilterTag>> getFilterTagsByGroup(String group) {
-        List<FilterTag> tags = filterTagRepository.findByFilterGroup_name(group);
+    public ResponseEntity<List<FilterTag>> getFilterTagsByGroup(String groupName) {
+        List<FilterTag> tags = filterTagRepository.findByFilterGroup_name(groupName);
         return new ResponseEntity<List<FilterTag>>(tags, HttpStatus.OK);
     }
 
-    public ResponseEntity<FilterGroup> addFilterGroup(String name) {
-        FilterGroup group = new FilterGroup(name);
+    public ResponseEntity<FilterGroup> addFilterGroup(String groupName) {
+        FilterGroup group = new FilterGroup(groupName);
         filterGroupRepository.save(group);
         return new ResponseEntity<FilterGroup>(group, HttpStatus.OK);
     }
