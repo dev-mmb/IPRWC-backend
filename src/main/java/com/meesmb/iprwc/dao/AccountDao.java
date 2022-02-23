@@ -1,7 +1,6 @@
 package com.meesmb.iprwc.dao;
 
 import com.meesmb.iprwc.config.RoleName;
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.jwt.JwtRequest;
 import com.meesmb.iprwc.jwt.JwtResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
@@ -13,6 +12,8 @@ import com.meesmb.iprwc.repository.RoleRepository;
 import com.meesmb.iprwc.repository.ShoppingCartRepository;
 import com.meesmb.iprwc.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -66,28 +67,28 @@ public class AccountDao {
         return true;
     }
 
-    public HTTPResponse<JwtResponse> authenticate(JwtRequest authenticationRequest) {
+    public ResponseEntity<JwtResponse> authenticate(JwtRequest authenticationRequest) {
 
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword()));
         } catch (DisabledException e) {
-            return HTTPResponse.<JwtResponse>returnFailure("user: " + authenticationRequest.getUsername() + " is disabled");
+            return new ResponseEntity("user: " + authenticationRequest.getUsername() + " is disabled", HttpStatus.FORBIDDEN);
         } catch (Exception e) {
-            return HTTPResponse.<JwtResponse>returnFailure("");
+            return new ResponseEntity("", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
         final String token = jwtTokenUtil.generateToken(userDetails);
-        return HTTPResponse.<JwtResponse>returnSuccess(new JwtResponse(token));
+        return new ResponseEntity<JwtResponse>(new JwtResponse(token), HttpStatus.OK);
     }
 
-    public HTTPResponse<Boolean> isTokenValid(String token) {
+    public ResponseEntity<Boolean> isTokenValid(String token) {
         if (token.contains("Bearer ")) {
             token = token.substring(7);
         }
         boolean isExpired = jwtTokenUtil.isTokenExpired(token);
         // if token is expired it is no longer valid
-        return HTTPResponse.returnSuccess(!isExpired);
+        return new ResponseEntity<Boolean>(!isExpired, HttpStatus.OK);
     }
 
     private boolean doesEmailExist(String email) {

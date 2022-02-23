@@ -1,9 +1,10 @@
 package com.meesmb.iprwc.dao;
 
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.Product;
 import com.meesmb.iprwc.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -14,44 +15,43 @@ public class ProductDao {
     @Autowired
     ProductRepository productRepository;
 
-    public HTTPResponse<List<Product>> getAllProducts() {
-        return HTTPResponse.returnSuccess(productRepository.findAll());
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return new ResponseEntity<List<Product>>(productRepository.findAll(), HttpStatus.OK);
     }
 
-    public HTTPResponse<List<Product>> getProductsByTags(String[] tags) {
+    public ResponseEntity<List<Product>> getProductsByTags(String[] tags) {
         List<Product> p = productRepository.findDistinctByFilterTags_nameIn(tags);
-        return HTTPResponse.returnSuccess(p);
+        return new ResponseEntity<List<Product>>(p, HttpStatus.OK);
     }
 
-    public HTTPResponse<Product[]> addProducts(Product[] requestObjects) {
+    public ResponseEntity<Product[]> addProducts(Product[] requestObjects) {
         for (Product product : requestObjects) {
             addProduct(product);
         }
-        return HTTPResponse.<Product[]>returnSuccess(requestObjects);
+        return new ResponseEntity<Product[]>(requestObjects, HttpStatus.OK);
     }
 
-    public HTTPResponse<Product> addProduct(Product obj) {
+    public void addProduct(Product obj) {
         obj.setId(UUID.randomUUID().toString());
         productRepository.save(obj);
-        return HTTPResponse.<Product>returnSuccess(obj);
     }
 
-    public HTTPResponse<List<Product>> getProductsByName(String name, String[] tags) {
-        List<Product> products = new ArrayList<Product>();
+    public ResponseEntity<List<Product>> getProductsByName(String name, String[] tags) {
+        List<Product> products;
         if (tags.length == 0) {
             products = productRepository.findByNameContainsIgnoreCase(name);
         }
         else {
             products = productRepository.findDistinctByNameContainsIgnoreCaseAndFilterTags_nameIn(name, tags);
         }
-        return HTTPResponse.<List<Product>>returnSuccess(products);
+        return new ResponseEntity<List<Product>>(products, HttpStatus.OK);
     }
 
-    public HTTPResponse<Product> changeProduct(Product p) {
+    public ResponseEntity<Product> changeProduct(Product p) {
         Optional<Product> old = productRepository.findById(p.getId());
-        if (old.isEmpty()) return HTTPResponse.returnFailure("could not find product id");
+        if (old.isEmpty()) return new ResponseEntity("could not find product id", HttpStatus.NOT_FOUND);
         p.setId(old.get().getId());
         productRepository.save(p);
-        return HTTPResponse.returnSuccess(p);
+        return new ResponseEntity<Product>(p, HttpStatus.OK);
     }
 }

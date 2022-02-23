@@ -1,7 +1,6 @@
 package com.meesmb.iprwc.controller;
 
 import com.meesmb.iprwc.dao.FileStorageDao;
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,7 @@ public class FileController {
     private FileStorageDao fileStorageService;
 
     @PostMapping("/product_image")
-    public HTTPResponse<String> productImageUpload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> productImageUpload(@RequestParam("file") MultipartFile file) {
         return fileStorageService.storeFile(file);
     }
 

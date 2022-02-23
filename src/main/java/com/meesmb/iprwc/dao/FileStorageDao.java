@@ -2,13 +2,13 @@ package com.meesmb.iprwc.dao;
 
 import com.meesmb.iprwc.exception.FileNotFoundException;
 import com.meesmb.iprwc.exception.FileStorageException;
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.File;
 import com.meesmb.iprwc.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.Optional;
 
 @Service
@@ -23,31 +24,31 @@ public class FileStorageDao {
     @Autowired
     FileRepository fileRepository;
 
-    public HTTPResponse<String> storeFile(MultipartFile file) {
+    public ResponseEntity<String> storeFile(MultipartFile file) {
         // Normalize file name
         String originalFileName = file.getOriginalFilename();
         if (originalFileName == null)
-            return HTTPResponse.returnFailure("could not get original filename");
+            return new ResponseEntity<String>("\"could not get original filename\"", HttpStatus.BAD_REQUEST);
         String fileName = StringUtils.cleanPath(originalFileName);
 
         // Check if the file's name contains invalid characters
         if(fileName.contains("..")) {
-            throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+            return new ResponseEntity<String>("\"Sorry! Filename contains invalid path sequence " + fileName + "\"", HttpStatus.BAD_REQUEST );
         }
 
         try {
             File f = new File(fileName, file.getBytes(), file.getContentType());
             fileRepository.save(f);
-            return HTTPResponse.returnSuccess(fileName);
+            return new ResponseEntity<String>(fileName, HttpStatus.OK);
         } catch (IOException e) {
-            return HTTPResponse.returnFailure(e.getMessage());
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     public ResponseEntity<Resource> loadFileAsResource(String fileName) throws Exception {
         Optional<File> f = fileRepository.findByFilename(fileName);
         if (f.isEmpty()) {
-            throw new FileNotFoundException("File with name: " + fileName + " not found");
+            return new ResponseEntity("\"File with name: " + fileName + " not found\"", HttpStatus.NOT_FOUND);
         }
 
         return ResponseEntity.ok()

@@ -1,10 +1,11 @@
 package com.meesmb.iprwc.controller;
 
 import com.meesmb.iprwc.dao.FilterTagDao;
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.model.FilterGroup;
 import com.meesmb.iprwc.model.FilterTag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,27 +17,27 @@ public class FilterTagController {
     FilterTagDao dao;
 
     @GetMapping("filter_tag")
-    public HTTPResponse<List<FilterTag>> getTags(@RequestParam(name = "group", defaultValue = "") String group) {
+    public ResponseEntity<List<FilterTag>> getTags(@RequestParam(name = "group", defaultValue = "") String group) {
         if (group.equals("")) {
             List<FilterTag> tags = dao.getAllTags();
-            return HTTPResponse.<List<FilterTag>>returnSuccess(tags);
+            return new ResponseEntity<List<FilterTag>>(tags, HttpStatus.OK);
         }
         return dao.getFilterTagsByGroup(group);
     }
 
     @PostMapping("filter_tag")
-    public HTTPResponse<FilterTag[]> postTag(@RequestBody FilterTag[] obj) {
+    public ResponseEntity<FilterTag[]> postTag(@RequestBody FilterTag[] obj) {
         return dao.addFilterTags(obj);
     }
 
     @GetMapping("filter_group")
-    public HTTPResponse<List<FilterGroup>> getGroups() {
+    public ResponseEntity<List<FilterGroup>> getGroups() {
         List<FilterGroup> groups = dao.getAllGroups();
-        return HTTPResponse.<List<FilterGroup>>returnSuccess(groups);
+        return new ResponseEntity<List<FilterGroup>>(groups, HttpStatus.OK);
     }
 
     @PostMapping("filter_group")
-    public HTTPResponse<FilterGroup> postGroup(@RequestBody FilterGroup obj) {
+    public ResponseEntity<FilterGroup> postGroup(@RequestBody FilterGroup obj) {
         return dao.addFilterGroup(obj.getName());
     }
 }

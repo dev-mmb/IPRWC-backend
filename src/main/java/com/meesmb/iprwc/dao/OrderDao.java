@@ -1,6 +1,5 @@
 package com.meesmb.iprwc.dao;
 
-import com.meesmb.iprwc.http_response.HTTPResponse;
 import com.meesmb.iprwc.jwt.JwtTokenUtil;
 import com.meesmb.iprwc.model.Account;
 import com.meesmb.iprwc.model.ProductsOrder;
@@ -11,6 +10,8 @@ import com.meesmb.iprwc.repository.OrderRepository;
 import com.meesmb.iprwc.repository.ShoppingCartProductRepository;
 import com.meesmb.iprwc.repository.ShoppingCartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -30,14 +31,14 @@ public class OrderDao {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
-    public HTTPResponse<List<ProductsOrder>> getAccountsOrders(String token) {
+    public ResponseEntity<List<ProductsOrder>> getAccountsOrders(String token) {
         // no need to check for null, a token can only exist if a token was generated for it.
         Account account = getAccountFromToken(token);
         List<ProductsOrder> orders = orderRepository.findByAccount(account.getId());
-        return HTTPResponse.returnSuccess(orders);
+        return new ResponseEntity<List<ProductsOrder>>(orders, HttpStatus.OK);
     }
 
-    public HTTPResponse<ProductsOrder> convertAccountShoppingCartToOrder(String token) {
+    public ResponseEntity<ProductsOrder> convertAccountShoppingCartToOrder(String token) {
         Account account = getAccountFromToken(token);
         // create order
         ShoppingCart cart = account.getShoppingCart();
@@ -49,17 +50,17 @@ public class OrderDao {
         shoppingCartRepository.save(cart);
         accountRepository.save(account);
         orderRepository.save(order);
-        return HTTPResponse.returnSuccess(order);
+        return new ResponseEntity<ProductsOrder>(order, HttpStatus.OK);
     }
 
-    public HTTPResponse<String> deleteOrder(ProductsOrder order) {
+    public ResponseEntity<String> deleteOrder(ProductsOrder order) {
         Optional<ProductsOrder> o = orderRepository.findById(order.getId());
-        if (o.isEmpty()) return HTTPResponse.returnFailure("could not find order");
+        if (o.isEmpty()) return new ResponseEntity<String>("\"could not find order\"", HttpStatus.NOT_FOUND);
         orderRepository.delete(o.get());
         for (ShoppingCartProduct p : o.get().getShoppingCartProducts()) {
             shoppingCartProductRepository.delete(p);
         }
-        return HTTPResponse.returnSuccess("SUCCESS");
+        return new ResponseEntity<String>("\"SUCCESS\"", HttpStatus.OK);
     }
 
     private Account getAccountFromToken(String token) {
