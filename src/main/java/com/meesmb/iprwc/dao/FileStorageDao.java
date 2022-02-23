@@ -1,7 +1,5 @@
 package com.meesmb.iprwc.dao;
 
-import com.meesmb.iprwc.exception.FileNotFoundException;
-import com.meesmb.iprwc.exception.FileStorageException;
 import com.meesmb.iprwc.model.File;
 import com.meesmb.iprwc.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
