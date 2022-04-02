@@ -36,9 +36,9 @@ public class FileStorageDao {
         try {
             File f = new File(fileName, file.getBytes(), file.getContentType());
             fileRepository.save(f);
-            return new ResponseEntity<String>(fileName, HttpStatus.OK);
+            return new ResponseEntity<String>("\"" + fileName + "\"", HttpStatus.OK);
         } catch (IOException e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<String>("\"" + e.getMessage() + "\"", HttpStatus.BAD_REQUEST);
         }
     }
 

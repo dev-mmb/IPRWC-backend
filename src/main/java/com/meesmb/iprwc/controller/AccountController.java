@@ -25,9 +25,9 @@ public class AccountController {
     public ResponseEntity<String> createUser(@RequestBody Account account) {
         boolean success = accountDao.createUser(account.getEmail(), account.getPassword(), RoleName.USER);
         if (success) {
-            return new ResponseEntity<String>("success", HttpStatus.OK);
+            return new ResponseEntity<String>(HttpStatus.OK);
         }
-        return new ResponseEntity<String>("something went wrong", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<String>("\"something went wrong\"", HttpStatus.BAD_REQUEST);
     }
 
     @GetMapping("/jwt/validate")

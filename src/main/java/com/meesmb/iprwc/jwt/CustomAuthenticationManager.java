@@ -24,7 +24,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
     @Autowired
     CustomUserDetailsService userDetailsService;
 
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // convert to strings
